@@ -1,4 +1,4 @@
-﻿#Include AutoHotkey v1.1.17+
+﻿#Requires AutoHotkey v1.1.17+
 #Include %A_ScriptDir%
 #Include .\lib\GdipInit.ahk ;  Before creating a class instance, initialize with GdipInit.startup().
 ;==============================================================
@@ -18,6 +18,26 @@
 ;   Fonts added with AddFontResourceEx are not working in GDI+
 ;     https://stackoverflow.com/questions/42595856/fonts-added-with-addfontresourceex-are-not-working-in-gdi
 ;==============================================================
+class VersionManager_GdipPrivateFont
+{
+    static _ := VersionManager_GdipPrivateFont._init()
+    _init()    {
+        global
+        GDIPPRIVATEFONT_VERSION := "1.0.0"
+        if (!this._verCheck(GDIPINIT_VERSION, "1.0.0"))
+            throw exception("GdipInit version 1.x is required (minimum 1.0.0).")
+        return true
+    }
+    _verCheck(byRef actual, required)    {
+        if !isSet(actual)
+            return false
+        actualMajor     := strSplit(actual, ".",, 2)[1]
+        requiredMajor   := strSplit(required, ".",, 2)[1]
+        if (actualMajor != requiredMajor)
+            return false
+        return verCompare(actual, ">=" required)
+    }
+}
 class GdipPrivateFont
 {
     __new()    {
